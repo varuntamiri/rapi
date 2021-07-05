@@ -14,7 +14,7 @@
     <name>Reactive API for HarlowData</name>
     <description>Sample API for HD</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>9</java.version>
     </properties>
     <dependencies>
         <dependency>
