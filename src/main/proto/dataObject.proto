@@ -1,0 +1,24 @@
+syntax = "proto3";
+package com.harlowis.data;
+option java_package = "com.harlowis.data";
+
+message ColDef {
+int32 TableID = 1;
+string TableName = 2;
+string Field = 3;
+optional string headername = 4;
+optional bool sortable = 5;
+optional bool filter = 6;
+optional bool CheckBoxSelection = 7;
+optional bool resizable = 8;
+optional bool rowGroup = 9;
+optional bool pinned = 10;
+optional bool colspan = 11;
+optional bool colmove = 12;
+Type Type = 13;
+}
+enum Type {
+Number = 0;
+Text = 1;
+}
+
