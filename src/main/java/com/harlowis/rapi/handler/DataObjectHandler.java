@@ -3,6 +3,7 @@ package com.harlowis.rapi.handler;
 import com.harlowis.data.DataObject;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
@@ -39,5 +40,35 @@ public class DataObjectHandler {
         objectMap1.put("Name", "United States");
 
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Flux.just(objectMap, objectMap1), List.class);
+    }
+
+    public Mono<ServerResponse> genColDefs(ServerRequest serverRequest) {
+        Optional<String> uri = serverRequest.queryParam("uri");
+        System.out.println(uri.get());
+        List<DataObject.ColDef> colDefs = new ArrayList<>();
+        if (uri.isPresent() && Objects.nonNull(uri.get())) {
+            WebClient client = WebClient.create();
+            Mono<Object[]> response = client.get()
+                    .uri(uri.get())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .retrieve()
+                    .bodyToMono(Object[].class);
+            Object[] responseBody = response.share().block();
+            if (responseBody.length > 0) {
+                Map<String, Object> mapper = (Map<String, Object>) responseBody[0];
+                for (String key : mapper.keySet()) {
+                    DataObject.ColDef colDef = DataObject.ColDef.newBuilder()
+                            .setTableID(1).setTableName("Universities")
+                            .setField(key).setHeadername(key)
+                            .setCheckBoxSelection(true).setColmove(true)
+                            .setResizable(true).setColspan(true)
+                            .setSortable(true).setFilter(true)
+                            .setRowGroup(true).setPinned(true)
+                            .setType(DataObject.Type.Number).build();
+                    colDefs.add(colDef);
+                }
+            }
+        }
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Flux.fromIterable(colDefs), DataObject.ColDef.class);
     }
 }
