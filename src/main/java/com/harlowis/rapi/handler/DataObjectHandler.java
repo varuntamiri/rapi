@@ -63,6 +63,7 @@ public class DataObjectHandler {
                         .setResizable(true).setColspan(true)
                         .setSortable(true).setFilter(true)
                         .setRowGroup(true).setPinned(true)
+                        .setPivot(true)
                         .setType(DataObject.Type.Number).build();
                 colDefs.add(colDef);
             }
