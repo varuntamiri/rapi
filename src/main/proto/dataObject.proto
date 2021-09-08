@@ -15,7 +15,8 @@ optional bool rowGroup = 9;
 optional bool pinned = 10;
 optional bool colspan = 11;
 optional bool colmove = 12;
-Type Type = 13;
+optional bool pivot = 13;
+Type Type = 14;
 }
 enum Type {
 Number = 0;
