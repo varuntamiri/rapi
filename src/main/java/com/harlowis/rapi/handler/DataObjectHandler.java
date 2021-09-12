@@ -11,10 +11,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 @Component
 public class DataObjectHandler {
-    private WebClient webClient = WebClient.create();
+
+    private final static Logger LOGGER = Logger.getLogger(DataObjectHandler.class.getName());
 
     public Mono<ServerResponse> getColdefs(ServerRequest serverRequest) {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Flux.fromIterable(getColDefList()), DataObject.ColDef.class);
@@ -22,12 +24,11 @@ public class DataObjectHandler {
 
     private List<DataObject.ColDef> getColDefList() {
         DataObject.ColDef colDef = DataObject.ColDef.newBuilder()
-                .setTableID(1).setTableName("Country")
                 .setField("Code").setHeadername("Code")
                 .setCheckBoxSelection(true).setColmove(true)
                 .setResizable(true).setColspan(true)
                 .setSortable(true).setFilter(true)
-                .setRowGroup(true).setPinned(true)
+                .setEnableRowGroup(true).setPinned(true)
                 .setType(DataObject.Type.Number).build();
         DataObject.ColDef colDef1 = DataObject.ColDef.newBuilder().setTableID(1).setTableName("Country").setField("Name").setHeadername("Name").setType(DataObject.Type.Text).build();
         return Arrays.asList(colDef, colDef1);
@@ -47,24 +48,21 @@ public class DataObjectHandler {
     public Mono<ServerResponse> genColDefs(ServerRequest serverRequest) {
         List<DataObject.ColDef> colDefs = new ArrayList<>();
         return serverRequest.bodyToMono(String.class).flatMap(value -> {
-//            System.out.println(value);
+            LOGGER.info("Fetching Url: "+value);
             return WebClient.builder().baseUrl(value)
                     .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                     .build().get()
                     .exchange().flatMap(res -> res.bodyToMono(Object[].class));
         }).flatMap(x -> {
-//            System.out.printf("X out:::::::::::::" + x);
+            LOGGER.info("Retrieved object first line: " + x);
             Map<String, Object> mapper = (Map<String, Object>) x[0];
             for (String key : mapper.keySet()) {
                 DataObject.ColDef colDef = DataObject.ColDef.newBuilder()
-                        .setTableID(1).setTableName("Table")
-                        .setField(key).setHeadername(key)
-                        .setCheckBoxSelection(true).setColmove(true)
-                        .setResizable(true).setColspan(true)
-                        .setSortable(true).setFilter(true)
-                        .setRowGroup(true).setPinned(true)
-                        .setPivot(true)
-                        .setType(DataObject.Type.Number).build();
+                        .setField(key)
+                        .setFilter(true)
+                        .setColmove(true).setEnablePivot(true)
+                        .setEnableRowGroup(true)
+                        .build();
                 colDefs.add(colDef);
             }
             return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Flux.fromIterable(colDefs), DataObject.ColDef.class);
