@@ -68,4 +68,11 @@ public class DataObjectHandler {
             return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Flux.fromIterable(colDefs), DataObject.ColDef.class);
         });
     }
+
+    public Mono<ServerResponse> getAvailableApis(ServerRequest serverRequest) {
+        Map<String, String> apis = new HashMap<>(2);
+        apis.put("UK Universities", "http://universities.hipolabs.com/search?country=United+Kingdom");
+        apis.put("World Covid", "https://api.apify.com/v2/key-value-stores/tVaYRsPHLjNdNBu7S/records/LATEST?disableRedirect=true");
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(Mono.just(apis), Map.class);
+    }
 }
