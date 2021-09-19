@@ -17,7 +17,8 @@ public class ReactRouter {
     public RouterFunction<ServerResponse> productsRoute(DataObjectHandler dataObjectHandler) {
         return RouterFunctions.route(GET("/GetColumnAttributes").and(accept(MediaType.APPLICATION_JSON)), dataObjectHandler::getColdefs)
                 .andRoute(POST("/GenColDefs").and(accept(MediaType.TEXT_PLAIN)), dataObjectHandler::genColDefs)
-                .andRoute(GET("/GetData").and(accept(MediaType.APPLICATION_JSON)), dataObjectHandler::getData);
+                .andRoute(GET("/GetData").and(accept(MediaType.APPLICATION_JSON)), dataObjectHandler::getData)
+                .andRoute(GET("/GetApis").and(accept(MediaType.APPLICATION_JSON)), dataObjectHandler::getAvailableApis);
     }
 
 }
